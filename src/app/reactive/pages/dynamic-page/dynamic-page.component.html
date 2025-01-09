@@ -1,17 +1,19 @@
 <h2>Reactivos: <small> Dinámicos </small></h2>
 <hr>
 
-<form autocomplete="off">
+<form autocomplete="off" [formGroup]="myForm" (ngSubmit)="onSubmit()">
 
     <!-- Nombre -->
     <div class="mb-3 row">
         <label class="col-sm-3 col-form-label">Nombre</label>
         <div class="col-sm-9">
-            <input class="form-control"
-                   placeholder="Nombre de la persona">
+            <input class="form-control" formControlName="name" placeholder="Nombre de la persona">
+            @if (isValidField('name')) {
+
             <span class="form-text text-danger">
-                   error message
+                {{getFieldError('name')}}
             </span>
+            }
         </div>
     </div>
 
@@ -21,15 +23,13 @@
         <div class="col-sm-9">
 
             <div class="input-group">
-                <input class="form-control"
-                       placeholder="Agregar favorito">
+                <input class="form-control" [formControl]="newFavorite" placeholder="Agregar favorito">
 
 
-                <button class="btn btn-outline-primary"
-                        type="button">
+                <button class="btn btn-outline-primary" (click)="onAddToFavorites()" type="button">
                     Agregar favorito
                 </button>
-            </div>
+            </div>  
         </div>
     </div>
 
@@ -37,23 +37,27 @@
     <!-- Lista de Juegos Favoritos -->
     <div class="mb-3 row">
         <label class="col-sm-3 col-form-label">Favoritos</label>
-        <div class="col-sm-9">
+        <div class="col-sm-9" formArrayName="favoriteGames">
+            @for (favorite of favoriteGames.controls | keyvalue; track favorite; let i = $index) {
 
             <div class="mb-1">
 
                 <div class="input-group">
-                    <input class="form-control">
+                    <input class="form-control" [formControlName]="i">
 
-                    <button class="btn btn-outline-danger"
-                            type="button">
-                      Eliminar
-                  </button>
+                    <button class="btn btn-outline-danger" (click)="onDeleteFavorite(i)" type="button">
+                        Eliminar
+                    </button>
                 </div>
+                @if (isValidFieldInArray(favoriteGames, i)) {
+
                 <span class="form-text text-danger">
-                   Este campo es requerido
+                    Este campo es requerido
                 </span>
+                }
 
             </div>
+            }
 
         </div>
     </div>
@@ -62,10 +66,8 @@
 
     <div class="row">
         <div class="col-sm-12">
-            <button type="submit"
-                    class="btn btn-primary float-end"
-                    >
-                    <!-- [disabled]="myForm.invalid" -->
+            <button type="submit" class="btn btn-primary float-end">
+                <!-- [disabled]="myForm.invalid" -->
                 Guardar
             </button>
         </div>
